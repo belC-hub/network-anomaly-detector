@@ -1,45 +1,19 @@
-# detectors.py
-# Contains multiple anomaly detection models
+# src/detectors.py
+import pandas as pd
+import numpy as np
 
-from sklearn.ensemble import IsolationForest
-from sklearn.svm import OneClassSVM
-from sklearn.neighbors import LocalOutlierFactor
+def run_isolation_forest(df: pd.DataFrame) -> pd.Series:
+    """
+    Dummy Isolation Forest stub.
+    Returns random 0/1 as anomalies.
+    """
+    np.random.seed(42)
+    return pd.Series(np.random.choice([0, 1], size=len(df)), index=df.index)
 
-class AnomalyDetectors:
-    def __init__(self):
-        # Initialize models
-        self.models = {
-            "isolation_forest": IsolationForest(contamination=0.1, random_state=42),
-            "one_class_svm": OneClassSVM(nu=0.1, kernel="rbf"),
-            "lof": LocalOutlierFactor(n_neighbors=20, contamination=0.1, novelty=True)
-        }
-
-    def fit(self, X):
-        for name, model in self.models.items():
-            if name == "lof":
-                model.fit(X)
-            else:
-                model.fit(X)
-
-    def predict(self, X):
-        """
-        Returns a dictionary of model_name -> predictions
-        1 = normal, -1 = anomaly
-        """
-        results = {}
-        for name, model in self.models.items():
-            results[name] = model.predict(X)
-        return results
-
-# Test detectors
-if __name__ == "__main__":
-    import pandas as pd
-    sample_data = pd.DataFrame({
-        "src": [192, 10, 172],
-        "dst": [192, 10, 172],
-        "len": [60, 120, 80]
-    })
-    ad = AnomalyDetectors()
-    ad.fit(sample_data)
-    preds = ad.predict(sample_data)
-    print(preds)
+def run_one_class_svm(df: pd.DataFrame) -> pd.Series:
+    """
+    Dummy One-Class SVM stub.
+    Returns random 0/1 as anomalies.
+    """
+    np.random.seed(24)
+    return pd.Series(np.random.choice([0, 1], size=len(df)), index=df.index)

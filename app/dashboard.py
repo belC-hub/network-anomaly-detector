@@ -1,32 +1,48 @@
-# dashboard.py
-# Streamlit dashboard for real-time anomaly detection
+# app/dashboard.py
+import sys
+import os
+
+# Add parent directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import streamlit as st
 from src.main import run_pipeline
-import pandas as pd
 
 st.set_page_config(page_title="Network Anomaly Detector", layout="wide")
-st.title("Network Anomaly Detection Dashboard")
+st.title("Network Anomaly Detector MVP")
 
-# Sidebar: number of packets to capture
-packet_count = st.sidebar.slider("Number of packets to capture", min_value=1, max_value=20, value=5)
+st.markdown(
+    """
+    This dashboard captures dummy network packets and detects anomalies
+    using multiple algorithms (simulated for testing).
+    """
+)
 
-# Capture & analyze packets
-if st.button("Run Detection"):
-    with st.spinner("Capturing and analyzing packets..."):
-        results_df = run_pipeline(packet_count=packet_count)
-        st.success("Detection complete!")
+packet_count = st.sidebar.number_input(
+    "Number of packets to capture",
+    min_value=10,
+    max_value=1000,
+    value=100,
+    step=10
+)
 
-        # Show full table
-        st.subheader("Captured Packets")
-        st.dataframe(results_df)
+if st.sidebar.button("Run Detection"):
+    with st.spinner("Running anomaly detection..."):
+        try:
+            results_df = run_pipeline(packet_count=packet_count)
+            st.success("Detection complete!")
 
-        # Show anomalies only
-        st.subheader("Anomalous Packets")
-        anomalies = results_df[results_df['anomaly'] == -1]
-        st.dataframe(anomalies)
+            st.subheader("All Packets")
+            st.dataframe(results_df)
 
-        # Summary
-        st.subheader("Summary")
-        st.write(f"Total packets captured: {len(results_df)}")
-        st.write(f"Total anomalies detected: {len(anomalies)}")
+            if 'is_anomaly' in results_df.columns:
+                anomalies = results_df[results_df['is_anomaly'] == 1]
+                st.subheader("Anomalous Packets Summary")
+                st.write(f"Total anomalies detected: {len(anomalies)}")
+                if len(anomalies) > 0:
+                    st.dataframe(anomalies)
+            else:
+                st.warning("No 'is_anomaly' column found in results.")
+
+        except Exception as e:
+            st.error(f"An error occurred: {e}")

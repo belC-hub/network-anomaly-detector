@@ -1,16 +1,17 @@
-# capture.py
-# MVP-friendly packet capture (simulated)
+# src/capture.py
+import pandas as pd
 
-def capture_packets(count=5):
+def capture_packets(packet_count=100):
     """
-    Return a list of fake packets for testing.
-    Each packet has 'src', 'dst', and 'len' keys.
+    Dummy packet capture.
+    Returns a list of dicts representing network packets.
     """
-    packets_list = []
-    for i in range(count):
-        packets_list.append({
-            "src": f"192.168.0.{i+1}",
-            "dst": "192.168.0.100",
-            "len": 60 + i*10
+    packets = []
+    for i in range(packet_count):
+        packets.append({
+            "src": f"192.168.0.{i%255}",
+            "dst": f"10.0.0.{i%255}",
+            "length": i % 1500,
+            "protocol": "TCP" if i % 2 == 0 else "UDP"
         })
-    return packets_list
+    return packets
